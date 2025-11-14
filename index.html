@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1 JAM ALQUR'AN TANPA GADGET</title>
+    <link rel="stylesheet" href="tampilan.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- HAPUS semua library moment - kita pakai API saja -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+    <div class="container" x-data="tilawahApp()">
+        <!-- Login User -->
+        <div x-show="!currentUser && !showAdminLogin" class="login-card card">
+            <!-- Tanggal Hijriah -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #3890f4 100%); color: white; padding: 16px; border-radius: 8px; text-align: center; margin-bottom: 24px;">
+                <div style="font-size: 16px; font-weight: 600;"><span x-text="currentHijriDate"></span></div>
+                <div style="font-size: 13px; margin-top: 6px; opacity: 0.9;" x-text="currentGregorianDate"></div>
+            </div>
+            <h1>1 JAM ALQUR'AN TANPA GADGET</h1>
+            <p class="subtitle">Nikmati, resapi, tanpa distraksi</p>
+            
+            <div class="input-group">
+                <label>User peserta</label>
+                <input type="text" x-model="loginUsername" @keyup.enter="login()" placeholder="Masukkan username">
+                <p x-show="loginError" class="error-msg" x-text="loginError"></p>
+            </div>
+            
+            <button class="btn btn-primary" @click="login()">Masuk</button>
+        </div>
+
+        <!-- Login Admin -->
+        <div x-show="showAdminLogin && !currentUser" class="login-card card">
+            <h1>Admin</h1>
+            <p class="subtitle">Administrator</p>
+            
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" x-model="adminPassword" @keyup.enter="adminLogin()" placeholder="Masukkan password admin">
+                <p x-show="loginError" class="error-msg" x-text="loginError"></p>
+            </div>
+            
+            <button class="btn btn-primary" @click="adminLogin()">Masuk Admin</button>
+            <button class="btn btn-secondary" @click="showAdminLogin = false">Kembali</button>
+        </div>
+
+        <!-- Dashboard User -->
+        <div x-show="currentUser && !isAdmin" class="card">
+            <div class="header">
+                <div class="user-info">
+                
+                    <div>
+                        <h2 x-text="currentUser"></h2>
+                        <p class="subtitle" style="margin: 0;">Maksimalkan quality time bersama Qur'an! :)</p>
+                    </div>
+                </div>
+                <button class="btn btn-danger" style="width: auto; padding: 8px 20px;" @click="logout()">Keluar</button>
+            </div>
+            <div style="background: linear-gradient(135deg, #26667F 0%, #1e5266 100%); color: white; padding: 12px 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; font-size: 15px; font-weight: 500;">
+                <span x-text="currentHijriDate"></span>
+            </div>
+
+            <div class="motivation-box">
+                <p class="motivation-text" x-text="currentMotivation"></p>
+            </div>
+            
+            <div class="month-selector">
+                <div style="flex: 1;">
+                    <label style="margin-bottom: 8px;">Pilih Bulan & Tahun:</label>
+                    <input type="month" x-model="selectedMonth" style="width: 100%;">
+                </div>
+            </div>
+
+            <div class="calendar-grid">
+                <template x-for="day in getDaysInMonth()" :key="day">
+                    <div 
+                        class="day-cell"
+                        :class="{
+                            'checked': isChecked(day),
+                            'disabled': day > getCurrentDay()
+                        }"
+                        @click="toggleDay(day)"
+                        x-text="day"
+                    ></div>
+                </template>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Hari berhasil</div>
+                    <div class="stat-value" x-text="calculateStats().completed"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Persentase</div>
+                    <div class="stat-value" x-text="calculateStats().percentage + '%'"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Hari berjalan</div>
+                    <div class="stat-value" x-text="calculateStats().total"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Dashboard Admin -->
+        <div x-show="currentUser && isAdmin" class="card">
+            <div class="header">
+                <h1>👨‍💼 Dashboard Admin</h1>
+                <button class="btn btn-danger" style="width: auto; padding: 8px 20px;" @click="logout()">Keluar</button>
+            </div>
+
+            <div class="motivation-box">
+                <p class="motivation-text" x-text="currentMotivation"></p>
+            </div>
+
+            <!-- Tambah Peserta -->
+            <div style="margin-bottom: 32px;">
+                <h2>Tambah Peserta</h2>
+                <div style="display: flex; gap: 12px;">
+                    <input type="text" x-model="newParticipant" placeholder="Username peserta baru" style="flex: 1;">
+                    <button class="btn btn-primary" style="width: auto; padding: 12px 24px;" @click="addParticipant()">Tambah</button>
+                </div>
+                <p x-show="adminMessage" :class="adminMessage.includes('berhasil') ? 'subtitle' : 'error-msg'" x-text="adminMessage"></p>
+            </div>
+
+            <!-- Filter Bulan -->
+            <div class="month-selector">
+                <div style="flex: 1;">
+                    <label style="margin-bottom: 8px;">Pilih Bulan & Tahun:</label>
+                    <input type="month" x-model="selectedMonth" style="width: 100%;">
+                </div>
+            </div>
+
+            <!-- Tabel Progress -->
+            <div class="table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Peserta</th>
+                            <th>Progress</th>
+                            <th>Hari Berhasil</th>
+                            <th>Persentase</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                <tbody>
+                    <template x-for="participant in getSortedParticipants()" :key="participant">
+                        <tr>
+                            <td data-label="Peserta" x-text="participant"></td>
+                            <td data-label="Progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" :style="`width: ${getParticipantStats(participant).percentage}%`"></div>
+                                </div>
+                            </td>
+                            <td data-label="Hari Berhasil" class="text-center" x-text="getParticipantStats(participant).completed + '/' + getParticipantStats(participant).total"></td>
+                            <td data-label="Persentase" class="text-center" x-text="getParticipantStats(participant).percentage + '%'"></td>
+                            <td data-label="Aksi">
+                                <button 
+                                    class="btn btn-danger" 
+                                    style="width: auto; padding: 6px 12px; font-size: 14px;"
+                                    @click="deleteParticipant(participant)"
+                                >Hapus</button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+                </table>
+            </div>
+
+            <button class="btn btn-secondary" @click="copyMonthlyReport()" style="margin-top: 24px;">
+                Copy Laporan 
+            </button>
+        </div>
+
+        <!-- Tombol Admin Tersembunyi -->
+        <button class="secret-btn" @click="showAdminLogin = true"></button>
+    </div>
+<script src="supabase.js"></script>
+<script src="aplikasi.js"></script>
+</body>
+</html>
