@@ -177,7 +177,7 @@ function tilawahApp() {
 
         adminLogin() {
             this.loginError = '';
-            if (this.adminPassword === 'admin123') {
+            if (this.adminPassword === 'ngajiqu') {
                 this.currentUser = 'Administrator';
                 this.isAdmin = true;
                 this.showAdminLogin = false;
