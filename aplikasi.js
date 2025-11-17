@@ -26,6 +26,21 @@ function tilawahApp() {
             '"Jagalah shalatmu, maka Allah akan menjaga kehidupanmu. Jagalah Qur\'anmu, maka Allah akan mencukupi kebutuhanmu." [KH. M. Adlan Aly]',
             '"Al Quran itu obatnya segala penyakit. Tapi ya, jangan menyambangi Al Quran pas waktu sakit saja. Al Quran juga punya perasaan." [KH. Maimun Zubair"',
             '"Sesibuk apapun kamu bekerja, sempatkanlah disela-sela waktumu untuk menyapa Al Quran dengan membacanya walau beberapa ayat. Bisa jadi amalmu itu akan membuat urusanmu menjadi mudah, rezekimu menjadi berkah, dan jiwamu tak lagi susah. Itulah bukti kecintaanmu kepada Al Quran." [Dr. Ahsin Sakho Muhammad, M.A]',
+            '"Allah berfirman: Barang siapa yang disibukkan dengan al-Qur\'an daripada dzikir dan berdoa kepadaKu maka Aku akan memberikan hal terbaik yang Aku berikan kepada orang-orang yang berdoa kepadaKu."[HR. Tirmidzi]',
+            '"Sesungguhnya rumah yang didalamnya dibacakan al-Qur\'an maka akan banyak keberkahannya, sedangkan rumah yang didalamnya tidak dibacakan al-Qur\'an maka sedikit kebaikannya." [HR. AL Bazzar]',
+            '"Barang siapa yang membaca sepuluh ayat dalam satu malam maka ia tidak tercatat sebagai orang yang lalai (di hari tersebut). Barang siapa yang membaca serratus ayat dalam satu malam maka ia tercatat sebagai orang yang taat. Barang siapa yang membaca dua ratus ayat dalam satu malam maka ia tercatat sebagai orang yang beruntung" [HR. Ad Darimi]',
+            '"Sesungguhnya hati ini bisa berkarat sebagaimana besi berkarat. Ditanyakan (kepada Rasulullah): Lalu apa pembersih karatnya wahai Rasulullah? Beliau menjawab: Memperbanyak mengingat kematian dan membaca al-Qur\'an"[HR. Al Bayhaqi]',
+            '"Para penghafal al-Qur\'an adalah para kekasih Allah. Barang siapa yang memusuhi mereka, maka Allah akan memusuhinya dan barang siapa mengasihi mereka Allah pun akan mengasihinya" [HR. Ibn An Najjar]',
+            '"Al-Qur\'an bisa menjadi pembela sekaligus bisa menjadi penuntut bagimu (di hari kiamat)"". [HR. Muslim]',
+            '"Sesungguhnya tidak ada hal yang lebih baik saat kamu kembali (sowan/menghadap) kepada tuhanmu selain sesuatu yang memang berasal dariNya (al-Qur\'an)." [HR. Al Hakim]',
+            '"Semakin banyak hafalan kita, semakin keras pula usaha syaitan untuk menggelincirkan kita, maka luruskan niat setiap saat hanya untuk mencari ridha Allah."[Nyai Hj. Masyhudah Karim]',
+            '"Salah satu bentuk maksiat lisan yakni jika sudah diberi anugerah berupa Al Qur\'an tetapi tidak digunakan untuk Muroja\'ah." [KHR. Muhammad Najib AQM]',
+            '"Kalau ada orang yang hafal Al-Qur\'an, tapi hidupnya sumpek (tidak tenteram), biasanya tidak pernah Muroja\'ah."[KH. Abdul Munim Syadzili]',
+            '"Jika membaca dan mentadabburi Al Quran itu tanda cinta, maka istiqomah adlah tanda setia"',
+            '"Al Qur\'an; ia dihafal jadi kemuliaan bagi akal; ia diamal jadi kebaikan nan dikenal, ia direnungi jadi keteguhan bagi hati."{Salim A. Fillah}',
+            '"Menghafal itu menggunakan seluruh organ wudhu, yaitu wajah meliputi mata untuk melihat ayat, dan telinga untuk mendengarkan ayat, lalu tangan untuk memegang mushaf, membuka lembaran-lembaran mushaf, dan menunjuk ayat, lalu kepala meliputi memori untuk mengingat ayat dan menyimpannya, dan kaki untuk berdiri lama Muroja\'ah ayat dalam shalat." {Dr. KH. Deden M. Makyaruddin. M.A}',
+            '"Bagi santri penghafal Al Qur\'an setiap bulan adalah Ramadhan dan setiap malam adalah Lailatul Qadar, karena setiap hari Al Qur\'an turun ke dalam hatinya." {Dr. KH. Deden M. Makyaruddin. MA}',
+            ''
         ],
         monthNames: [
             'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -359,9 +374,9 @@ function tilawahApp() {
                 
                 // Tambahkan emoji medal untuk top 3
                 let medal = '';
-                if (index === 0) medal = '🥇 ';
-                else if (index === 1) medal = '🥈 ';
-                else if (index === 2) medal = '🥉 ';
+                if (index === 0) medal = ' ';
+                else if (index === 1) medal = ' ';
+                else if (index === 2) medal = ' ';
                 
                 report += `${medal}${index + 1}. *${participant}*\n`;
                 report += `${stats.completed}/${stats.total} hari (${stats.percentage}%)\n\n`;
