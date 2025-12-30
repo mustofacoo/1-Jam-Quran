@@ -210,27 +210,27 @@ function tilawahApp() {
             this.currentMotivation = this.motivations[Math.floor(Math.random() * this.motivations.length)];
         },
 
-        login() {
-            this.loginError = '';
-            if (!this.loginUsername.trim()) {
-                this.loginError = 'Username tidak boleh kosong';
-                return;
-            }
-            
-            // 🔒 Simpan versi yang sudah di-trim
-            const normalizedUsername = this.loginUsername.trim();
-            
-            if (this.participants.includes(normalizedUsername)) {
-                const participant = this.participantsData.find(p => p.username === normalizedUsername);
-                
-                this.currentUser = normalizedUsername;
-                this.currentUserFullName = participant ? participant.full_name : normalizedUsername;
-                this.isAdmin = false;
-                this.setRandomMotivation();
-            } else {
-                this.loginError = 'Username tidak terdaftar';
-            }
-        },
+login() {
+    this.loginError = '';
+    if (!this.loginUsername.trim()) {
+        this.loginError = 'Username tidak boleh kosong';
+        return;
+    }
+    
+    // 🔒 Simpan versi yang sudah di-trim dan lowercase
+    const normalizedUsername = this.loginUsername.trim().toLowerCase();
+    
+    if (this.participants.includes(normalizedUsername)) {
+        const participant = this.participantsData.find(p => p.username === normalizedUsername);
+        
+        this.currentUser = normalizedUsername;
+        this.currentUserFullName = participant ? participant.full_name : normalizedUsername;
+        this.isAdmin = false;
+        this.setRandomMotivation();
+    } else {
+        this.loginError = 'Username tidak terdaftar';
+    }
+},
 
         adminLogin() {
             this.loginError = '';
@@ -254,60 +254,61 @@ function tilawahApp() {
             this.showAdminLogin = false;
         },
 
-        async addParticipant() {
-            this.adminMessage = '';
-            const newUsername = this.newParticipant.trim();
-            const newName = this.newFullName.trim();
-            
-            if (!newUsername) {
-                this.adminMessage = 'Username tidak boleh kosong';
-                return;
-            }
-            
-            // 🔒 Cegah spasi di dalam username
-            if (newUsername.includes(' ')) {
-                this.adminMessage = 'Username tidak boleh mengandung spasi';
-                return;
-            }
-            
-            // 🔒 Cegah karakter khusus
-            if (!/^[a-zA-Z0-9_-]+$/.test(newUsername)) {
-                this.adminMessage = 'Username hanya boleh huruf, angka, - dan _';
-                return;
-            }
-            
-            if (!newName) {
-                this.adminMessage = 'Nama lengkap tidak boleh kosong';
-                return;
-            }
-            
-            if (this.participants.includes(newUsername)) {
-                this.adminMessage = 'Username sudah ada';
-                return;
-            }
-            
-            try {
-                const { error } = await supabaseClient
-                    .from('participants')
-                    .insert({ 
-                        username: newUsername,
-                        full_name: newName
-                    });
+async addParticipant() {
+    this.adminMessage = '';
+    // 🔒 Auto-convert username ke lowercase
+    const newUsername = this.newParticipant.trim().toLowerCase();
+    const newName = this.newFullName.trim();
+    
+    if (!newUsername) {
+        this.adminMessage = 'Username tidak boleh kosong';
+        return;
+    }
+    
+    // 🔒 Cegah spasi di dalam username
+    if (newUsername.includes(' ')) {
+        this.adminMessage = 'Username tidak boleh mengandung spasi';
+        return;
+    }
+    
+    // 🔒 Cegah karakter khusus (hanya lowercase sekarang)
+    if (!/^[a-z0-9_-]+$/.test(newUsername)) {
+        this.adminMessage = 'Username hanya boleh huruf kecil, angka, - dan _';
+        return;
+    }
+    
+    if (!newName) {
+        this.adminMessage = 'Nama lengkap tidak boleh kosong';
+        return;
+    }
+    
+    if (this.participants.includes(newUsername)) {
+        this.adminMessage = 'Username sudah ada';
+        return;
+    }
+    
+    try {
+        const { error } = await supabaseClient
+            .from('participants')
+            .insert({ 
+                username: newUsername,
+                full_name: newName
+            });
 
-                if (error) throw error;
-                
-                this.participants.push(newUsername);
-                this.participantsData.push({ username: newUsername, full_name: newName });
-                
-                this.adminMessage = `Peserta ${newName} (${newUsername}) berhasil ditambahkan`;
-                this.newParticipant = '';
-                this.newFullName = '';
-                
-            } catch (error) {
-                console.error('Error adding participant:', error);
-                this.adminMessage = 'Gagal menambah: ' + error.message;
-            }
-        },
+        if (error) throw error;
+        
+        this.participants.push(newUsername);
+        this.participantsData.push({ username: newUsername, full_name: newName });
+        
+        this.adminMessage = `Peserta ${newName} (${newUsername}) berhasil ditambahkan`;
+        this.newParticipant = '';
+        this.newFullName = '';
+        
+    } catch (error) {
+        console.error('Error adding participant:', error);
+        this.adminMessage = 'Gagal menambah: ' + error.message;
+    }
+},
 
         async deleteParticipant(participant) {
             if (!confirm(`Hapus peserta ${participant}? Ini akan menghapus SEMUA data progresnya.`)) {
