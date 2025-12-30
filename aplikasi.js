@@ -1,6 +1,7 @@
 function tilawahApp() {
     return {
         currentUser: null,
+        currentUserFullName: '',
         isAdmin: false,
         loginUsername: '',
         adminPassword: '',
@@ -8,7 +9,9 @@ function tilawahApp() {
         showAdminLogin: false,
         participants: [],
         newParticipant: '',
+        newFullName: '',
         adminMessage: '',
+        participantsData: [], 
         selectedMonth: '',
         tracking: {},
         currentMotivation: '',
@@ -56,48 +59,38 @@ function tilawahApp() {
         selectedMonthNumber: new Date().getMonth() + 1,
         currentHijriDate: 'Bismillaah...',
         currentGregorianDate: '',
+        // 🔒 FIX 1: Tambah locking mechanism
+        _pendingToggles: new Set(),
 
         async init() {
             await this.loadData();
             this.setupYearFilter();
             this.updateSelectedMonth();
             this.setRandomMotivation();
-            
-            // Load tanggal Hijriah dari API
             await this.loadHijriDate();
         },
 
         async loadHijriDate() {
             try {
-                // Dapatkan tanggal hari ini
                 const today = new Date();
                 const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
                 
-                console.log('📅 Fetching Hijri date for:', dateStr);
-                
-                // Panggil API Aladhan
                 const response = await fetch(`https://api.aladhan.com/v1/gToH/${dateStr}`);
                 const data = await response.json();
                 
                 if (data.code === 200 && data.data && data.data.hijri) {
                     const hijri = data.data.hijri;
-                    
-                    // Konversi nama bulan ke Indonesia jika perlu
                     const monthName = this.convertHijriMonthName(hijri.month.en);
                     
                     this.currentHijriDate = `${hijri.day} ${monthName} ${hijri.year} H`;
                     
-                    // Format tanggal Masehi dalam bahasa Indonesia
                     const monthsIndo = this.monthNames;
                     this.currentGregorianDate = `${today.getDate()} ${monthsIndo[today.getMonth()]} ${today.getFullYear()}`;
-                    
-                    console.log('✅ Hijri date loaded:', this.currentHijriDate);
                 } else {
                     throw new Error('Invalid API response');
                 }
             } catch (error) {
                 console.error('❌ Error loading Hijri date:', error);
-                // Fallback: tampilkan tanggal Masehi saja
                 const today = new Date();
                 this.currentHijriDate = 'Tanggal Hijriah';
                 this.currentGregorianDate = `${today.getDate()} ${this.monthNames[today.getMonth()]} ${today.getFullYear()}`;
@@ -105,14 +98,13 @@ function tilawahApp() {
         },
 
         convertHijriMonthName(englishName) {
-            // Mapping nama bulan dari API ke Indonesia
             const mapping = {
                 'Muḥarram': 'Muharram',
                 'Ṣafar': 'Safar',
                 'Rabīʿ al-awwal': 'Rabiul Awal',
                 'Rabīʿ al-thānī': 'Rabiul Akhir',
                 'Jumādá al-ūlá': 'Jumadil Awal',
-                'Jumādá al-ākhirah': 'Jumadil Akhir',
+                'Jumādá al-Ākhirah': 'Jumadil Akhir',
                 'Rajab': 'Rajab',
                 'Shaʿbān': "Sya'ban",
                 'Ramaḍān': 'Ramadan',
@@ -126,16 +118,22 @@ function tilawahApp() {
 
         async loadData() {
             this.participants = [];
+            this.participantsData = [];
             this.tracking = {};
             
             try {
                 const { data: participantsData, error: participantsError } = await supabaseClient
                     .from('participants')
-                    .select('username');
+                    .select('username, full_name');
                     
                 if (participantsError) throw participantsError;
                 
-                this.participants = participantsData.map(p => p.username);
+                // 🔒 Normalisasi data dari database
+                this.participantsData = participantsData.map(p => ({
+                    username: p.username.trim(),
+                    full_name: p.full_name.trim()
+                }));
+                this.participants = this.participantsData.map(p => p.username);
 
                 const { data: trackingData, error: trackingError } = await supabaseClient
                     .from('tracking_log')
@@ -145,7 +143,9 @@ function tilawahApp() {
 
                 trackingData.forEach(log => {
                     const [year, month, day] = log.date_log.split('-');
-                    const key = `${log.participant_username}_${year}-${month}_${parseInt(day)}`;
+                    // 🔒 Trim username dari tracking log
+                    const username = log.participant_username.trim();
+                    const key = `${username}_${year}-${month}_${parseInt(day)}`;
                     this.tracking[key] = true;
                 });
                 
@@ -181,8 +181,14 @@ function tilawahApp() {
                 return;
             }
             
-            if (this.participants.includes(this.loginUsername.trim())) {
-                this.currentUser = this.loginUsername.trim();
+            // 🔒 Simpan versi yang sudah di-trim
+            const normalizedUsername = this.loginUsername.trim();
+            
+            if (this.participants.includes(normalizedUsername)) {
+                const participant = this.participantsData.find(p => p.username === normalizedUsername);
+                
+                this.currentUser = normalizedUsername;
+                this.currentUserFullName = participant ? participant.full_name : normalizedUsername;
                 this.isAdmin = false;
                 this.setRandomMotivation();
             } else {
@@ -194,6 +200,7 @@ function tilawahApp() {
             this.loginError = '';
             if (this.adminPassword === 'ngajiqu') {
                 this.currentUser = 'Administrator';
+                this.currentUserFullName = 'Administrator';
                 this.isAdmin = true;
                 this.showAdminLogin = false;
                 this.setRandomMotivation();
@@ -204,6 +211,7 @@ function tilawahApp() {
 
         logout() {
             this.currentUser = null;
+            this.currentUserFullName = '';
             this.isAdmin = false;
             this.loginUsername = '';
             this.adminPassword = '';
@@ -213,9 +221,27 @@ function tilawahApp() {
         async addParticipant() {
             this.adminMessage = '';
             const newUsername = this.newParticipant.trim();
+            const newName = this.newFullName.trim();
             
             if (!newUsername) {
                 this.adminMessage = 'Username tidak boleh kosong';
+                return;
+            }
+            
+            // 🔒 Cegah spasi di dalam username
+            if (newUsername.includes(' ')) {
+                this.adminMessage = 'Username tidak boleh mengandung spasi';
+                return;
+            }
+            
+            // 🔒 Cegah karakter khusus
+            if (!/^[a-zA-Z0-9_-]+$/.test(newUsername)) {
+                this.adminMessage = 'Username hanya boleh huruf, angka, - dan _';
+                return;
+            }
+            
+            if (!newName) {
+                this.adminMessage = 'Nama lengkap tidak boleh kosong';
                 return;
             }
             
@@ -227,13 +253,19 @@ function tilawahApp() {
             try {
                 const { error } = await supabaseClient
                     .from('participants')
-                    .insert({ username: newUsername });
+                    .insert({ 
+                        username: newUsername,
+                        full_name: newName
+                    });
 
                 if (error) throw error;
                 
                 this.participants.push(newUsername);
-                this.adminMessage = `Peserta ${newUsername} berhasil ditambahkan`;
+                this.participantsData.push({ username: newUsername, full_name: newName });
+                
+                this.adminMessage = `Peserta ${newName} (${newUsername}) berhasil ditambahkan`;
                 this.newParticipant = '';
+                this.newFullName = '';
                 
             } catch (error) {
                 console.error('Error adding participant:', error);
@@ -255,12 +287,18 @@ function tilawahApp() {
                 if (error) throw error;
 
                 this.participants = this.participants.filter(p => p !== participant);
+                this.participantsData = this.participantsData.filter(p => p.username !== participant);
                 this.adminMessage = `Peserta ${participant} berhasil dihapus`;
                 
             } catch (error) {
                 console.error('Error deleting participant:', error);
                 this.adminMessage = 'Gagal menghapus: ' + error.message;
             }
+        },
+
+        getFullName(username) {
+            const participant = this.participantsData.find(p => p.username === username);
+            return participant ? participant.full_name : username;
         },
 
         getDaysInMonth() {
@@ -283,15 +321,32 @@ function tilawahApp() {
             return this.tracking[key] === true;
         },
 
+        // 🔒 FIX 2: Perbaikan LENGKAP toggleDay dengan locking + upsert
         async toggleDay(day) {
             if (day > this.getCurrentDay()) return;
             
             const key = `${this.currentUser}_${this.selectedMonth}_${day}`;
-            const isCurrentlyChecked = this.tracking[key] === true;
             const date_log = `${this.selectedMonth}-${String(day).padStart(2, '0')}`;
+
+            // 🔒 FIX: Cegah multiple clicks dengan Set
+            if (this._pendingToggles.has(key)) {
+                console.log('⏳ Request sudah dalam proses, harap tunggu...');
+                return;
+            }
+
+            // Lock request ini
+            this._pendingToggles.add(key);
+
+            // Simpan state sebelumnya untuk rollback
+            const isCurrentlyChecked = this.tracking[key] === true;
+            const previousState = isCurrentlyChecked;
+
+            // Optimistic update (update UI dulu)
+            this.tracking[key] = !isCurrentlyChecked;
 
             try {
                 if (isCurrentlyChecked) {
+                    // DELETE
                     const { error } = await supabaseClient
                         .from('tracking_log')
                         .delete()
@@ -301,22 +356,40 @@ function tilawahApp() {
                         });
                     
                     if (error) throw error;
-                    delete this.tracking[key];
                     
                 } else {
+                    // 🔒 FIX: Gunakan UPSERT untuk mencegah duplicate
+                    // Format yang BENAR untuk Supabase JS Client v2
                     const { error } = await supabaseClient
                         .from('tracking_log')
-                        .insert({
+                        .upsert({
                             participant_username: this.currentUser,
                             date_log: date_log
+                        }, {
+                            // Hanya butuh onConflict, tidak perlu ignoreDuplicates
+                            // Supabase akan auto-detect primary key/unique constraint
                         });
                     
                     if (error) throw error;
-                    this.tracking[key] = true;
                 }
+
+                console.log('✅ Data berhasil disimpan');
+
             } catch (error) {
-                console.error('Error toggling day:', error);
-                alert('Gagal menyimpan progres: ' + error.message);
+                console.error('❌ Error toggling day:', error);
+                
+                // Rollback jika gagal
+                this.tracking[key] = previousState;
+                
+                // Tampilkan error yang lebih user-friendly
+                if (error.message && error.message.toLowerCase().includes('duplicate')) {
+                    alert('Data sudah tersimpan. Silakan refresh halaman.');
+                } else {
+                    alert('Gagal menyimpan progres: ' + (error.message || 'Unknown error'));
+                }
+            } finally {
+                // Unlock setelah selesai
+                this._pendingToggles.delete(key);
             }
         },
 
@@ -344,14 +417,11 @@ function tilawahApp() {
         },
 
         getSortedParticipants() {
-    // Buat array dengan data peserta dan statistiknya
             const participantsWithStats = this.participants.map(participant => ({
                 name: participant,
                 stats: this.getParticipantStats(participant)
             }));
             
-            // Urutkan berdasarkan percentage (tertinggi ke terendah)
-            // Jika percentage sama, urutkan berdasarkan completed
             participantsWithStats.sort((a, b) => {
                 if (b.stats.percentage !== a.stats.percentage) {
                     return b.stats.percentage - a.stats.percentage;
@@ -359,35 +429,33 @@ function tilawahApp() {
                 return b.stats.completed - a.stats.completed;
             });
             
-            // Return hanya nama peserta yang sudah terurut
             return participantsWithStats.map(p => p.name);
         },
 
         copyMonthlyReport() {
             const [year, month] = this.selectedMonth.split('-');
             const monthName = this.monthNames[parseInt(month) - 1]; 
-            let report = `📊 *LAPORAN TILAWAH ${monthName.toUpperCase()} ${year}*\n\n`;
+            let report = `*LAPORAN TILAWAH ${monthName.toUpperCase()} ${year}*\n\n`;
             
-            // GANTI DENGAN getSortedParticipants() 👇
             this.getSortedParticipants().forEach((participant, index) => {
                 const stats = this.getParticipantStats(participant);
+                const fullName = this.getFullName(participant);
                 
-                // Tambahkan emoji medal untuk top 3
                 let medal = '';
                 if (index === 0) medal = ' ';
                 else if (index === 1) medal = ' ';
                 else if (index === 2) medal = ' ';
                 
-                report += `${medal}${index + 1}. *${participant}*\n`;
-                report += `${stats.completed}/${stats.total} hari (${stats.percentage}%)\n\n`;
+                report += `${medal}${index + 1}. *${fullName}*\n`;
+                report += `   ${stats.completed}/${stats.total} hari (${stats.percentage}%)\n\n`;
             });
             
-            report += `━━━━━━━━━━━━━━━━━━━━━\n`;
-            report += `Semoga istiqomah\n`;
+            report += `─────────────────────\n`;
+            report += `Semoga istiqomah 🤲\n`;
             report += `Update: ${new Date().toLocaleDateString('id-ID')}`;
             
             navigator.clipboard.writeText(report).then(() => {
-                this.adminMessage = 'Laporan berhasil disalin! Silakan paste ke WhatsApp';
+                this.adminMessage = '✅ Laporan berhasil disalin! Silakan paste ke WhatsApp';
                 setTimeout(() => this.adminMessage = '', 3000);
             });
         }
