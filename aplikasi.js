@@ -43,7 +43,43 @@ function tilawahApp() {
             '"Al Qur\'an; ia dihafal jadi kemuliaan bagi akal; ia diamal jadi kebaikan nan dikenal, ia direnungi jadi keteguhan bagi hati."{Salim A. Fillah}',
             '"Menghafal itu menggunakan seluruh organ wudhu, yaitu wajah meliputi mata untuk melihat ayat, dan telinga untuk mendengarkan ayat, lalu tangan untuk memegang mushaf, membuka lembaran-lembaran mushaf, dan menunjuk ayat, lalu kepala meliputi memori untuk mengingat ayat dan menyimpannya, dan kaki untuk berdiri lama Muroja\'ah ayat dalam shalat." {Dr. KH. Deden M. Makyaruddin. M.A}',
             '"Bagi santri penghafal Al Qur\'an setiap bulan adalah Ramadhan dan setiap malam adalah Lailatul Qadar, karena setiap hari Al Qur\'an turun ke dalam hatinya." {Dr. KH. Deden M. Makyaruddin. MA}',
-            ''
+            '"Al-Qur’an itu harus dijaga dan dibaca. Rumahmu harus menjadi sejuk karena Al-Qur’an. Jangan sampai kamu mengajarkan Al-Qur’an ke sana kemari, tetapi rumahmu sendiri kosong dari Al-Qur’an." {KH. M. Anwar Manshur}',
+
+'"Ketika seorang merasa rindu untuk membaca Al-Qur’an, itu pertanda bahwa Al-Qur’an sudah menjadi bagian dari hidupnya." {KH. Ahsin Sakho Muhammad}',
+
+'"l-Qur\'an adalah Kalamullah yang dimuliakan oleh Allah sendiri. Sesuatu yang Allah muliakan jangan sampai disepelekan. Maka anak-anak, ketika sudah pulang ke rumah, berumah tangga, dan bekerja, jangan sampai melupakan hafalan dan bacaan l-Qur\'annya." {KH. R. Najib AQ Munawwir}',
+
+'"Tidak ada kefakiran bagi orang yang hidupnya bersama Al-Qur’an. Karena siapa pun yang dekat dengan kalam Allah, hidupnya akan selalu dicukupkan dengan ketenangan, keberkahan, dan kasih sayang-Nya." {KH. Yusuf Mahsyar}',
+
+'"l-Qur\'an bisa menjauhkan kita dari maksiat, dan maksiat bisa menjauhkan kita dari l-Qur\'an." {Ibu Nyai Hj. Nur Hannah Zamzami}',
+
+'"Siapa yang ingin berbicara dengan Tuhan, berdoalah. Siapa yang ingin Tuhan berbicara kepadanya, bacalah l-Qur\'an." {Prof. Dr. M. Quraish Shihab}',
+
+'"Ayo nak, targetkan hafalanmu mutqin. Jangan jadikan pekerjaan rumah tangga, kesibukan, atau mengurus anak kecil sebagai alasan tidak muroja\'ah. Bisa, asal mampu mengalahkan kebiasaan terlalu sering menamatkan story di HP dibandingkan menamatkan bacaan l-Qur\'an." {Ibu Nyai Hj. Nur Hannah Zamzami}',
+
+'"Kamu tidak perlu bingung dengan kondisi Al-Qur’anmu, ayat atau juz yang belum lancar. Tidak perlu pusing menghafal seperti saat setoran. Cukup istiqomah mengkhatamkan Al-Qur’an, insya Allah hafalanmu akan lancar dan kembali dengan sendirinya." {KH. Nawawi Abdul Aziz}',
+
+'"Wahai para penghafal Al-Qur\'an, jagalah l-Qur\'an dengan baik. Karena l-Qur\'an memiliki dua kemungkinan: menjadi syafaat atau menjadi laknat." {KH. Saiful Abidin}',
+
+'"Jangan pernah menyepelekan nderes l-Qur\'an. Keberhasilan pasti akan turun kepada siapa pun yang dekat dengan l-Qur\'an." {Dr. KH. Ahsin Sakho Muhammad, Lc., MA}',
+
+'"Kelancaran bacaan adalah anugerah dari Allah. Kewajiban kita adalah muroja\'ah. Jika kita sudah nderes, maka lancar atau tidaknya adalah urusan Allah." {Ibu Nyai Hj. Nur Hannah Zamzami}',
+
+'"Membaca Al-Qur’an itu memberkahi waktu. Jangan karena kesibukan lain kita mengabaikan membaca Al-Qur’an. Akibatnya, kesibukan tidak selesai dan bacaan Al-Qur’an pun tidak didapat." {Dr. KH. Muhammad Afifudin Dimyathi}',
+
+'"Usaha menghafal l-Qur\'an itu tidak cukup hanya man jadda wajada. Di atas itu ada bil istimatah, yaitu bersungguh-sungguh secara mati-matian." {KH. Muhammad Fathoni Dimyathi, Lc.}',
+
+'"Nderes l-Qur\'an ketika belum lancar ibarat minum jamu, rasanya pahit namun menyehatkan. Jika sudah lancar ibarat minum madu, rasanya manis dan menyehatkan." {Ibu Nyai Hj. Luluk Illiyah}',
+
+'"Ketika l-Qur\'an dijadikan agenda utama, maka waktu terasa seakan lebih dari dua puluh empat jam sehari." {Ibu Nyai Hj. Luluk Illiyah}',
+
+'"Orang yang ahli l-Qur\'an dan terus membaca l-Qur\'an dapat menjadi wali Allah. Jika ingin menjadi wali Allah, maka sibukkan diri dengan menghafal dan membaca l-Qur\'an." {KH. Muhammad Najih MZ}',
+
+'"Membaca l-Qur\'an adalah zikir yang paling utama. Lebih afdal daripada istighfar, tasbih, tahlil, dan zikir-zikir lainnya." {Syekh Said Ramadhan Al-Buthi}',
+
+'"Sebagian penghafal Al-Qur’an, jika ia mengulang hafalannya sebelum tidur lalu tertidur, maka hafalannya akan menguat. Karena selama tidur, ruhnya terus mengulang apa yang ia sibukkan sebelum tidur." {Habib Umar bin Hafidz}',
+
+'"Shohibul Qur\'an adalah orang yang mulazamah muroja\'ah setiap hari, mau mengamalkan perintah-perintah l-Qur\'an, dan berakhlak dengan akhlak l-Qur\'an." {KH. Muhammad Ulin Nuha Arwani}',
         ],
         monthNames: [
             'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
