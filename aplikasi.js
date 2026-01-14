@@ -469,32 +469,35 @@ async addParticipant() {
             return participantsWithStats.map(p => p.name);
         },
 
-        copyMonthlyReport() {
-            const [year, month] = this.selectedMonth.split('-');
-            const monthName = this.monthNames[parseInt(month) - 1]; 
-            let report = `*LAPORAN TILAWAH ${monthName.toUpperCase()} ${year}*\n\n`;
-            
-            this.getSortedParticipants().forEach((participant, index) => {
-                const stats = this.getParticipantStats(participant);
-                const fullName = this.getFullName(participant);
-                
-                let medal = '';
-                if (index === 0) medal = ' ';
-                else if (index === 1) medal = ' ';
-                else if (index === 2) medal = ' ';
-                
-                report += `${medal}${index + 1}. *${fullName}*\n`;
-                report += `   ${stats.completed}/${stats.total} hari (${stats.percentage}%)\n\n`;
-            });
-            
-            report += `─────────────────────\n`;
-            report += `Semoga istiqomah 🤲\n`;
-            report += `Update: ${new Date().toLocaleDateString('id-ID')}`;
-            
-            navigator.clipboard.writeText(report).then(() => {
-                this.adminMessage = '✅ Laporan berhasil disalin! Silakan paste ke WhatsApp';
-                setTimeout(() => this.adminMessage = '', 3000);
-            });
+copyMonthlyReport() {
+    const [year, month] = this.selectedMonth.split('-');
+    const monthName = this.monthNames[parseInt(month) - 1]; 
+    let report = `*LAPORAN TILAWAH ${monthName.toUpperCase()} ${year}*\n\n`;
+    report += `_Update: ${new Date().toLocaleDateString('id-ID')}_\n\n`;
+    
+    this.getSortedParticipants().forEach((participant, index) => {
+        const stats = this.getParticipantStats(participant);
+        const fullName = this.getFullName(participant);
+        
+        
+        report += `${index + 1}. *${fullName}*\n`;
+        report += `   ${stats.completed}/${stats.total} hari (${stats.percentage}%)\n\n`;
+    });
+    
+    report += `─────────────────────\n`;
+    report += `Semoga istiqomah 🤲\n`;
+   
+    
+    navigator.clipboard.writeText(report).then(() => {
+        // Jika admin, tampilkan di dashboard admin
+        if (this.isAdmin) {
+            this.adminMessage = '✅ Laporan berhasil disalin!';
+            setTimeout(() => this.adminMessage = '', 3000);
+        } else {
+            // Jika user biasa (lewat tap 2x), tampilkan alert
+            alert('✅ Laporan ' + monthName + ' berhasil disalin ke clipboard!');
         }
+    });
+}
     }
 }
