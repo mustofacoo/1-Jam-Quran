@@ -17,6 +17,11 @@
 </head>
 <body>
     <div class="container" x-data="tilawahApp()">
+        <div 
+            @dblclick="copyMonthlyReport()" 
+            style="position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 9999; cursor: pointer;"
+            title="Double tap for report">
+        </div>
         
         <div x-show="!currentUser && !showAdminLogin" class="login-card card">
             <div style="margin-bottom: 24px;">
@@ -26,7 +31,8 @@
                 <p style="color: rgb(18, 84, 75);" class="subtitle">--------------------------------------------------</p>
             </div>
 
-            <h1>BISMILLAH... QUALITY TIME BARENG AL-QUR'AN</h1>
+            <h1>BISMILLAAH...</h1>
+            <h1>QUALITY TIME BERSAMA AL-QUR'AN</h1>
             <p class="subtitle">Nikmati, Resapi, Tanpa Distraksi</p>
             
 
